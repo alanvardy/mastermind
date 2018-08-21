@@ -1,5 +1,6 @@
 class Game
   def initialize #todo validate input
+    clear_screen
     @game_rounds = 0
     @game_won = false
     puts "--GAME SETUP--"
@@ -13,7 +14,9 @@ class Game
   end
 
   def score
-    puts "The score is #{code_maker.name}: #{code_maker.score} #{code_breaker.name}: #{code_breaker.score}| "
+    puts "The score is #{@code_maker.name}: #{@code_maker.score} #{@code_breaker.name}: #{@code_breaker.score} "
+    puts "Press enter to continue"
+    continue = gets
   end
 
   private
@@ -24,10 +27,15 @@ class Game
       @guess_array = []
       @answer_array = []
       @code_maker, @code_breaker = @code_breaker, @code_maker
+      clear_screen
       @code = get_ints("SET", @code_maker.name)
       play_turn
     end
       end_game
+  end
+
+  def clear_screen
+    puts "\e[H\e[2J"
   end
 
   def play_turn
@@ -39,33 +47,49 @@ class Game
       answer = @code #todo fix this later, for testing
       @answer_array.push(answer)
     end
-    @guess_array[-1] == @code ? @code_breaker.won_round : @code_maker.won_round
+    clear_screen
+    if @guess_array[-1] == @code
+      puts "The code is broken!"
+      @code_breaker.won_round
+    else
+      puts "The code remains unsolved! (it was #{@code})"
+      @code_maker.won_round
+    end
+    score
   end
 
   #print out the current game board
   def display_board
+    clear_screen
     print_line
-    blank_rows = @total_guesses - @game_rounds
+    blank_rows = @total_guesses - @guess_array.length
     puts "   CODE         HINTS"
     print_line
     blank_rows.times do
       puts "| O O O O |  | * * * * |"
     end
     filled_rows = @total_guesses - blank_rows
-    filled_rows.times do |row|
+    counter = 0
+    reversed_guess = @guess_array.reverse
+    reversed_answer = @answer_array.reverse
+    filled_rows.times do
       print "| "
-      @guess_array.reverse[row-1].each {|x| print x; print " "} #todo fix this mess!
+      reversed_guess[counter].each {|x| print x; print " "} #todo fix this mess!
       print "|  | "
-      @answer_array.reverse[row-1].each {|x| print x; print " "}
+      reversed_answer[counter].each {|x| print x; print " "}
       puts "|"
+      counter += 1
     end
     print_line
   end
 
   def get_ints(heading, name)
-    print "\n\n\t--#{heading} THE CODE--\n#{name} - Enter 4 digits, each one 1-6: "
+    print "\t--#{heading} THE CODE--\n#{name} - Enter 4 digits, each one 1-6: "
+    input = gets.chomp
+
+
     answer = []
-    gets.chomp.each_char do |char| #todo validate input
+    input.each_char do |char| #todo validate input
       answer.push(char.to_i)
     end
     answer
@@ -80,6 +104,7 @@ class Game
   end
 
   def end_game
+    clear_screen
     score
     winner = @code_maker.score > code_breaker.score ? @code_maker.name : @code_breaker.name
     puts "The winner is #{winner}!"
@@ -98,7 +123,6 @@ attr_reader :name, :score
   def won_round
     @score += 1
     puts "#{@name} won the round!"
-    game.score
   end
 end
 
