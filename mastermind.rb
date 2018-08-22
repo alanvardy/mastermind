@@ -28,6 +28,7 @@ class Game
       @answer_array = []
       @code_maker, @code_breaker = @code_breaker, @code_maker
       clear_screen
+      puts "Round #{@game_rounds}!"
       @code = get_ints("SET", @code_maker.name)
       play_turn
     end
@@ -74,7 +75,7 @@ class Game
     reversed_answer = @answer_array.reverse
     filled_rows.times do
       print "| "
-      reversed_guess[counter].each {|x| print x; print " "} #todo fix this mess!
+      reversed_guess[counter].each {|x| print x; print " "}
       print "|  | "
       reversed_answer[counter].each {|x| print x; print " "}
       puts "|"
@@ -83,13 +84,15 @@ class Game
     print_line
   end
 
+  #Get 4 digits and validate
   def get_ints(heading, name)
-    print "\t--#{heading} THE CODE--\n#{name} - Enter 4 digits, each one 1-6: "
-    input = gets.chomp
-
-
+    input = ""
+    until (/^[1-6]{4}$/) =~ input do
+      print "\t--#{heading} THE CODE--\n#{name} - Enter 4 digits, each one 1-6: "
+      input = gets.chomp
+    end
     answer = []
-    input.each_char do |char| #todo validate input
+    input.each_char do |char|
       answer.push(char.to_i)
     end
     answer
