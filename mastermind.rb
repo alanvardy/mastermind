@@ -31,7 +31,6 @@ class Game
       clear_screen
       puts "Round #{@game_rounds}!"
       @code = random_4_digits
-      puts "TEST @code: #{@code}" #todo remove test code
       play_turn
     end
       end_game
@@ -113,8 +112,6 @@ class Game
   def evaluate_guess(guess)
     code_array = @code.chars
     guess_array = guess.chars
-    puts "code_array is #{code_array}" #todo remove test code
-    puts "guess_array is #{guess_array}" #todo remove test code
     (0..3).each do |num|
       "1234" #todo write the evaluation
     end
