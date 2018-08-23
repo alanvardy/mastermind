@@ -6,15 +6,17 @@ class Game
     puts "--GAME SETUP--"
     print "Guesses allowed per round (10 recommended): "
     @total_guesses = gets.chomp.to_i
-    print "Number of rounds per player: "
-    @total_rounds = gets.chomp.to_i * 2
-    @code_maker = Player.new("one")
-    @code_breaker = Player.new("two")
+    print "Number of rounds: "
+    @total_rounds = gets.chomp.to_i
+    print "Enter player name: "
+    name = gets.chomp
+    @human = Player.new(name)
+    @computer = Player.new("Computer")
     reset_round
   end
 
   def score
-    puts "The score is #{@code_maker.name}: #{@code_maker.score} #{@code_breaker.name}: #{@code_breaker.score} "
+    puts "The score is #{@human.name}: #{@human.score} #{@computer.name}: #{@computer.score} "
     puts "Press enter to continue"
     continue = gets
   end
@@ -26,10 +28,10 @@ class Game
       @game_rounds += 1
       @guess_array = []
       @answer_array = []
-      @code_maker, @code_breaker = @code_breaker, @code_maker
       clear_screen
       puts "Round #{@game_rounds}!"
-      @code = get_ints("SET", @code_maker.name)
+      @code = random_4_digits
+      puts "TEST @code: #{@code}" #todo remove test code
       play_turn
     end
       end_game
@@ -40,21 +42,21 @@ class Game
   end
 
   def play_turn
-    while @guess_array.length < @total_guesses &&
-          @guess_array[-1] != @code
+    while @guess_array.length < @total_guesses
       display_board
-      guess = get_ints("GUESS", @code_breaker.name)
+      guess = get_4_digits
       @guess_array.push(guess)
-      answer = @code #todo fix this later, for testing
+      answer = evaluate_guess(guess)
       @answer_array.push(answer)
+      break if match?(@guess_array[-1])
     end
     clear_screen
-    if @guess_array[-1] == @code
+    if match?(@guess_array[-1])
       puts "The code is broken!"
-      @code_breaker.won_round
+      @human.won_round
     else
       puts "The code remains unsolved! (it was #{@code})"
-      @code_maker.won_round
+      @computer.won_round
     end
     score
   end
@@ -75,9 +77,9 @@ class Game
     reversed_answer = @answer_array.reverse
     filled_rows.times do
       print "| "
-      reversed_guess[counter].each {|x| print x; print " "}
+      reversed_guess[counter].chars {|x| print x; print " "}
       print "|  | "
-      reversed_answer[counter].each {|x| print x; print " "}
+      reversed_answer[counter].chars {|x| print x; print " "}
       puts "|"
       counter += 1
     end
@@ -85,31 +87,43 @@ class Game
   end
 
   #Get 4 digits and validate
-  def get_ints(heading, name)
+  def get_4_digits
     input = ""
+    puts "Hints: 2 means correct number in correct location,\nand 1 means correct number in wrong location"
     until (/^[1-6]{4}$/) =~ input do
-      print "\t--#{heading} THE CODE--\n#{name} - Enter 4 digits, each one 1-6: "
+      print "\t--GUESS THE CODE--\n#{@human.name} - Enter 4 digits, each one 1-6: "
       input = gets.chomp
     end
-    answer = []
-    input.each_char do |char|
-      answer.push(char.to_i)
-    end
-    answer
+    input
+  end
+
+  def random_4_digits
+    "1234"
   end
 
   def print_line
     puts "------------------------"
   end
 
-  def evaluate_guess
-    #todo evaluate the guess, add answer to answer_array
+  def match?(guess)
+    return false if [nil].include?(guess)
+    return @code == guess ? true : false
+  end
+
+  def evaluate_guess(guess)
+    code_array = @code.chars
+    guess_array = guess.chars
+    puts "code_array is #{code_array}" #todo remove test code
+    puts "guess_array is #{guess_array}" #todo remove test code
+    (0..3).each do |num|
+      "1234" #todo write the evaluation
+    end
   end
 
   def end_game
     clear_screen
     score
-    winner = @code_maker.score > code_breaker.score ? @code_maker.name : @code_breaker.name
+    winner = @human.score > computer.score ? @human.name : @computer.name
     puts "The winner is #{winner}!"
   end
 end
@@ -117,9 +131,8 @@ end
 class Player
 attr_reader :name, :score
 
-  def initialize(num)
-    print "Enter player #{num} name: "
-    @name = gets.chomp
+  def initialize(name)
+    @name = name
     @score = 0
   end
 
