@@ -15,7 +15,7 @@ class Game
     reset_round
   end
 
-  def score
+  def score #todo can i consolidate this?
     puts "The score is #{@human.name}: #{@human.score} #{@computer.name}: #{@computer.score} "
     puts "Press enter to continue"
     continue = gets
@@ -50,7 +50,7 @@ class Game
       break if match?(@guess_array[-1])
     end
     clear_screen
-    if match?(@guess_array[-1])
+    if match?(@guess_array[-1]) #todo consolidate into won round method
       puts "The code is broken!"
       @human.won_round
     else
@@ -88,7 +88,8 @@ class Game
   #Get 4 digits and validate
   def get_4_digits
     input = ""
-    puts "Hints: 2 means correct number in correct location,\nand 1 means correct number in wrong location"
+    puts "Hints: 2 means correct number in correct location,
+         \nand 1 means correct number in wrong location"
     until (/^[1-6]{4}$/) =~ input do
       print "\t--GUESS THE CODE--\n#{@human.name} - Enter 4 digits, each one 1-6: "
       input = gets.chomp
