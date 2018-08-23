@@ -113,8 +113,14 @@ class Game
   def evaluate_guess(guess)
     code_array = @code.chars
     guess_array = guess.chars
+    hint_array = []
     (0..3).each do |num|
-      "1234" #todo write the evaluation
+      if code_array[num] == guess_array[num]
+        code_array.delete_at(num)
+        guess_array.delete_at(num)
+        hint_array.push[1]
+      end
+      #todo add 1 characters and filler characters
     end
   end
 
