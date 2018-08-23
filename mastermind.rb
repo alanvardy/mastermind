@@ -1,5 +1,5 @@
 class Game
-  def initialize #todo validate input
+  def initialize
     clear_screen
     @game_rounds = 0
     @game_won = false
